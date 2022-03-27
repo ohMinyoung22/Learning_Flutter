@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:random_number/constant/color.dart';
-import 'package:random_number/screen/settings_screen.dart';
+import 'package:random_number/screen/setting_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     final result = await Navigator.of(context).push<int>(
       MaterialPageRoute(
         builder: (context) {
-          return SettingsScreen(maxNumber: maxNumber,);
+          return SettingsScreen(maxNumber: maxNumber);
         },
       ),
     );

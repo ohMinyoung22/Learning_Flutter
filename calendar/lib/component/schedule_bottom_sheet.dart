@@ -9,23 +9,30 @@ class ScheduleBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return Container(
-      height: MediaQuery.of(context).size.height / 2 + bottomInset,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottomInset),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            _Time(),
-            SizedBox(height: 16),
-            _Content(),
-            SizedBox(height: 16),
-            _ColorPicker(),
-            SizedBox(height: 16),
-            _SaveButton(),
-          ]),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: SafeArea(
+        child: Container(
+          height: MediaQuery.of(context).size.height / 2 + bottomInset,
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                _Time(),
+                SizedBox(height: 16),
+                _Content(),
+                SizedBox(height: 16),
+                _ColorPicker(),
+                SizedBox(height: 16),
+                _SaveButton(),
+              ]),
+            ),
+          ),
         ),
       ),
     );
@@ -86,8 +93,11 @@ class _Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextField(
-      label: '내용',
+    return Expanded(
+      child: CustomTextField(
+        label: '내용',
+        isTime: false,
+      ),
     );
   }
 }
@@ -104,11 +114,13 @@ class _Time extends StatelessWidget {
         Expanded(
             child: CustomTextField(
           label: '시작 시간',
+          isTime: true,
         )),
         SizedBox(width: 16),
         Expanded(
             child: CustomTextField(
           label: '마감 시간',
+          isTime: true,
         )),
       ],
     );

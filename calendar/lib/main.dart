@@ -1,7 +1,12 @@
 import 'package:calendar/screen/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); //플러터 준비까지 기다림
+
+  await initializeDateFormatting();
+
   runApp(MaterialApp(home: HomeScreen()));
 }
 

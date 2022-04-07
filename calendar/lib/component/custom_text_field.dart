@@ -25,8 +25,11 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  TextField renderTextField() {
-    return TextField(
+  Widget renderTextField() {
+    return TextFormField(
+      validator: ((String? value) { //null 에러 없음 / String 리턴 에러 o
+        
+      }),
       expands: isTime ? false : true,
       maxLines: isTime ? 1 : null,
       keyboardType: isTime ? TextInputType.number : TextInputType.multiline,

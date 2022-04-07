@@ -2,8 +2,15 @@ import 'package:calendar/component/custom_text_field.dart';
 import 'package:calendar/constant/colors.dart';
 import 'package:flutter/material.dart';
 
-class ScheduleBottomSheet extends StatelessWidget {
+class ScheduleBottomSheet extends StatefulWidget {
   const ScheduleBottomSheet({Key? key}) : super(key: key);
+
+  @override
+  State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
+}
+
+class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
+  final GlobalKey<FormState> formKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -21,26 +28,46 @@ class ScheduleBottomSheet extends StatelessWidget {
             padding: EdgeInsets.only(bottom: bottomInset),
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
-              child:
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _Time(),
-                SizedBox(height: 16),
-                _Content(),
-                SizedBox(height: 16),
-                _ColorPicker(),
-                SizedBox(height: 16),
-                _SaveButton(),
-              ]),
+              child: Form(
+                key: formKey,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _Time(),
+                      SizedBox(height: 16),
+                      _Content(),
+                      SizedBox(height: 16),
+                      _ColorPicker(),
+                      SizedBox(height: 16),
+                      _SaveButton(onPressed: onSavePressed,),
+                    ]),
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
+  void onSavePressed() {
+    if(formKey.currentState == null){
+      return;
+    }
+
+    if(formKey.currentState!.validate()){
+      //Form 아래의 모든 TextField의 Validate() 실행
+      //모든 Validator() null 반환 -> validate true 반환
+
+    } else{
+      //에러 O
+    }
+  }
 }
 
 class _SaveButton extends StatelessWidget {
-  const _SaveButton({Key? key}) : super(key: key);
+  final VoidCallback onPressed;
+
+  const _SaveButton({required this.onPressed, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +75,7 @@ class _SaveButton extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: (() {}),
+            onPressed: onPressed,
             style: ElevatedButton.styleFrom(primary: PRIMARY_COLOR),
             child: Text('저장'),
           ),

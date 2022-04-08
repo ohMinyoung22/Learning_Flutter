@@ -29,6 +29,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
               child: Form(
+                autovalidateMode: AutovalidateMode.always,
                 key: formKey,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

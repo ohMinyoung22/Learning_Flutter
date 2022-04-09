@@ -1,6 +1,9 @@
 import 'package:calendar/component/custom_text_field.dart';
 import 'package:calendar/constant/colors.dart';
+import 'package:calendar/model/category_color.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:calendar/datebase/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
   const ScheduleBottomSheet({Key? key}) : super(key: key);
@@ -11,6 +14,10 @@ class ScheduleBottomSheet extends StatefulWidget {
 
 class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   final GlobalKey<FormState> formKey = GlobalKey();
+
+  int? startTime;
+  int? endTime;
+  String? content;
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +41,37 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _Time(),
+                      _Time(
+                        onStartSaved: (String? value) {
+                          startTime = int.parse(value!);
+                        },
+                        onEndSaved: (String? value) {
+                          endTime = int.parse(value!);
+                        },
+                      ),
                       SizedBox(height: 16),
-                      _Content(),
+                      _Content(
+                        onSaved: (String? value) {
+                          content = value!;
+                        },
+                      ),
                       SizedBox(height: 16),
-                      _ColorPicker(),
+                      FutureBuilder<List<CategoryColor>>(
+                          future: GetIt.I<LocalDatabase>().getCategoryColors(),
+                          builder: (context, snapshot) {
+                            return _ColorPicker(
+                              colors: snapshot.hasData
+                                  ? snapshot.data!
+                                      .map((e) =>
+                                          Color(int.parse('FF${e.hexCode}', radix: 16)))
+                                      .toList()
+                                  : [],
+                            );
+                          }),
                       SizedBox(height: 16),
-                      _SaveButton(onPressed: onSavePressed,),
+                      _SaveButton(
+                        onPressed: onSavePressed,
+                      ),
                     ]),
               ),
             ),
@@ -51,15 +82,16 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   }
 
   void onSavePressed() {
-    if(formKey.currentState == null){
+    if (formKey.currentState == null) {
       return;
     }
 
-    if(formKey.currentState!.validate()){
+    if (formKey.currentState!.validate()) {
       //Form 아래의 모든 TextField의 Validate() 실행
       //모든 Validator() null 반환 -> validate true 반환
 
-    } else{
+      formKey.currentState!.save();
+    } else {
       //에러 O
     }
   }
@@ -87,21 +119,15 @@ class _SaveButton extends StatelessWidget {
 }
 
 class _ColorPicker extends StatelessWidget {
-  const _ColorPicker({Key? key}) : super(key: key);
+  final List<Color> colors;
+
+  const _ColorPicker({required this.colors, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 8,
-      children: [
-        Colors.red,
-        Colors.orange,
-        Colors.yellow,
-        Colors.green,
-        Colors.blue,
-        Colors.indigo,
-        Colors.purple,
-      ].map((e) => renderColor(e)).toList(),
+      children: colors.map((e) => renderColor(e)).toList(),
     );
   }
 }
@@ -115,7 +141,10 @@ Widget renderColor(Color color) {
 }
 
 class _Content extends StatelessWidget {
+  final FormFieldSetter<String> onSaved;
+
   const _Content({
+    required this.onSaved,
     Key? key,
   }) : super(key: key);
 
@@ -123,6 +152,7 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: CustomTextField(
+        onSaved: onSaved,
         label: '내용',
         isTime: false,
       ),
@@ -131,7 +161,12 @@ class _Content extends StatelessWidget {
 }
 
 class _Time extends StatelessWidget {
+  final FormFieldSetter<String> onStartSaved;
+  final FormFieldSetter<String> onEndSaved;
+
   const _Time({
+    required this.onStartSaved,
+    required this.onEndSaved,
     Key? key,
   }) : super(key: key);
 
@@ -141,12 +176,14 @@ class _Time extends StatelessWidget {
       children: [
         Expanded(
             child: CustomTextField(
+          onSaved: onStartSaved,
           label: '시작 시간',
           isTime: true,
         )),
         SizedBox(width: 16),
         Expanded(
             child: CustomTextField(
+          onSaved: onEndSaved,
           label: '마감 시간',
           isTime: true,
         )),

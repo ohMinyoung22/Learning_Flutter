@@ -10,6 +10,8 @@ class Schedules extends Table {
 
   IntColumn get startTime => integer()();
 
+  IntColumn get endTime => integer()();
+
   IntColumn get colorId => integer()();
 
   DateTimeColumn get createdAt => dateTime().clientDefault(

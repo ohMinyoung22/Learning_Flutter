@@ -12,6 +12,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   final String content;
   final DateTime date;
   final int startTime;
+  final int endTime;
   final int colorId;
   final DateTime createdAt;
   Schedule(
@@ -19,6 +20,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
       required this.content,
       required this.date,
       required this.startTime,
+      required this.endTime,
       required this.colorId,
       required this.createdAt});
   factory Schedule.fromData(Map<String, dynamic> data, {String? prefix}) {
@@ -32,6 +34,8 @@ class Schedule extends DataClass implements Insertable<Schedule> {
           .mapFromDatabaseResponse(data['${effectivePrefix}date'])!,
       startTime: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}start_time'])!,
+      endTime: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}end_time'])!,
       colorId: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}color_id'])!,
       createdAt: const DateTimeType()
@@ -45,6 +49,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
     map['content'] = Variable<String>(content);
     map['date'] = Variable<DateTime>(date);
     map['start_time'] = Variable<int>(startTime);
+    map['end_time'] = Variable<int>(endTime);
     map['color_id'] = Variable<int>(colorId);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -56,6 +61,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
       content: Value(content),
       date: Value(date),
       startTime: Value(startTime),
+      endTime: Value(endTime),
       colorId: Value(colorId),
       createdAt: Value(createdAt),
     );
@@ -69,6 +75,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
       content: serializer.fromJson<String>(json['content']),
       date: serializer.fromJson<DateTime>(json['date']),
       startTime: serializer.fromJson<int>(json['startTime']),
+      endTime: serializer.fromJson<int>(json['endTime']),
       colorId: serializer.fromJson<int>(json['colorId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -81,6 +88,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
       'content': serializer.toJson<String>(content),
       'date': serializer.toJson<DateTime>(date),
       'startTime': serializer.toJson<int>(startTime),
+      'endTime': serializer.toJson<int>(endTime),
       'colorId': serializer.toJson<int>(colorId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -91,6 +99,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
           String? content,
           DateTime? date,
           int? startTime,
+          int? endTime,
           int? colorId,
           DateTime? createdAt}) =>
       Schedule(
@@ -98,6 +107,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
         content: content ?? this.content,
         date: date ?? this.date,
         startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
         colorId: colorId ?? this.colorId,
         createdAt: createdAt ?? this.createdAt,
       );
@@ -108,6 +118,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
           ..write('content: $content, ')
           ..write('date: $date, ')
           ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
           ..write('colorId: $colorId, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -116,7 +127,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
 
   @override
   int get hashCode =>
-      Object.hash(id, content, date, startTime, colorId, createdAt);
+      Object.hash(id, content, date, startTime, endTime, colorId, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -125,6 +136,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
           other.content == this.content &&
           other.date == this.date &&
           other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
           other.colorId == this.colorId &&
           other.createdAt == this.createdAt);
 }
@@ -134,6 +146,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
   final Value<String> content;
   final Value<DateTime> date;
   final Value<int> startTime;
+  final Value<int> endTime;
   final Value<int> colorId;
   final Value<DateTime> createdAt;
   const SchedulesCompanion({
@@ -141,6 +154,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
     this.content = const Value.absent(),
     this.date = const Value.absent(),
     this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
     this.colorId = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -149,17 +163,20 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
     required String content,
     required DateTime date,
     required int startTime,
+    required int endTime,
     required int colorId,
     this.createdAt = const Value.absent(),
   })  : content = Value(content),
         date = Value(date),
         startTime = Value(startTime),
+        endTime = Value(endTime),
         colorId = Value(colorId);
   static Insertable<Schedule> custom({
     Expression<int>? id,
     Expression<String>? content,
     Expression<DateTime>? date,
     Expression<int>? startTime,
+    Expression<int>? endTime,
     Expression<int>? colorId,
     Expression<DateTime>? createdAt,
   }) {
@@ -168,6 +185,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
       if (content != null) 'content': content,
       if (date != null) 'date': date,
       if (startTime != null) 'start_time': startTime,
+      if (endTime != null) 'end_time': endTime,
       if (colorId != null) 'color_id': colorId,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -178,6 +196,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
       Value<String>? content,
       Value<DateTime>? date,
       Value<int>? startTime,
+      Value<int>? endTime,
       Value<int>? colorId,
       Value<DateTime>? createdAt}) {
     return SchedulesCompanion(
@@ -185,6 +204,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
       content: content ?? this.content,
       date: date ?? this.date,
       startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
       colorId: colorId ?? this.colorId,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -205,6 +225,9 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
     if (startTime.present) {
       map['start_time'] = Variable<int>(startTime.value);
     }
+    if (endTime.present) {
+      map['end_time'] = Variable<int>(endTime.value);
+    }
     if (colorId.present) {
       map['color_id'] = Variable<int>(colorId.value);
     }
@@ -221,6 +244,7 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
           ..write('content: $content, ')
           ..write('date: $date, ')
           ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
           ..write('colorId: $colorId, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -256,6 +280,11 @@ class $SchedulesTable extends Schedules
   late final GeneratedColumn<int?> startTime = GeneratedColumn<int?>(
       'start_time', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _endTimeMeta = const VerificationMeta('endTime');
+  @override
+  late final GeneratedColumn<int?> endTime = GeneratedColumn<int?>(
+      'end_time', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _colorIdMeta = const VerificationMeta('colorId');
   @override
   late final GeneratedColumn<int?> colorId = GeneratedColumn<int?>(
@@ -270,7 +299,7 @@ class $SchedulesTable extends Schedules
       clientDefault: () => DateTime.now());
   @override
   List<GeneratedColumn> get $columns =>
-      [id, content, date, startTime, colorId, createdAt];
+      [id, content, date, startTime, endTime, colorId, createdAt];
   @override
   String get aliasedName => _alias ?? 'schedules';
   @override
@@ -300,6 +329,12 @@ class $SchedulesTable extends Schedules
           startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
     } else if (isInserting) {
       context.missing(_startTimeMeta);
+    }
+    if (data.containsKey('end_time')) {
+      context.handle(_endTimeMeta,
+          endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta));
+    } else if (isInserting) {
+      context.missing(_endTimeMeta);
     }
     if (data.containsKey('color_id')) {
       context.handle(_colorIdMeta,

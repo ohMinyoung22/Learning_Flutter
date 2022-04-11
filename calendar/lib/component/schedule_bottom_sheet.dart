@@ -1,12 +1,18 @@
 import 'package:calendar/component/custom_text_field.dart';
 import 'package:calendar/constant/colors.dart';
 import 'package:calendar/model/category_color.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter/widgets.dart' as wd;
 import 'package:calendar/datebase/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
-  const ScheduleBottomSheet({Key? key}) : super(key: key);
+
+  final DateTime selectedDate;
+
+  const ScheduleBottomSheet({required this.selectedDate, Key? key})
+      : super(key: key);
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -39,7 +45,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
               child: Form(
                 autovalidateMode: AutovalidateMode.always,
                 key: formKey,
-                child: Column(
+                child: wd.Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _Time(
@@ -72,7 +78,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                                   selectedColorId = id;
                                 });
                               },
-                              selectedColorId: selectedColorId!,
+                              selectedColorId: selectedColorId,
                               colors: snapshot.hasData ? snapshot.data! : [],
                             );
                           }),
@@ -89,7 +95,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     );
   }
 
-  void onSavePressed() {
+  void onSavePressed() async {
     if (formKey.currentState == null) {
       return;
     }
@@ -99,6 +105,18 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       //모든 Validator() null 반환 -> validate true 반환
 
       formKey.currentState!.save();
+
+      final key = await GetIt.I<LocalDatabase>().createSchedule(
+        SchedulesCompanion(
+          date: Value(widget.selectedDate),
+          startTime: Value(startTime!),
+          content: Value(content!),
+          endTime: Value(endTime!),
+          colorId: Value(selectedColorId!),
+        ),
+      );
+
+      Navigator.of(context).pop();
     } else {
       //에러 O
     }
@@ -130,7 +148,7 @@ typedef ColorIdSetter = void Function(int id);
 
 class _ColorPicker extends StatelessWidget {
   final List<CategoryColor> colors;
-  final int selectedColorId;
+  final int? selectedColorId;
   final ColorIdSetter colorIdSetter;
 
   const _ColorPicker(

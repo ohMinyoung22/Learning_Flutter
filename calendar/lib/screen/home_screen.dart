@@ -3,7 +3,9 @@ import 'package:calendar/component/schedule_bottom_sheet.dart';
 import 'package:calendar/component/schedule_card.dart';
 import 'package:calendar/component/today_banner.dart';
 import 'package:calendar/constant/colors.dart';
+import 'package:calendar/datebase/drift_database.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -73,15 +75,20 @@ class _ScheduleList extends StatelessWidget {
     return Expanded(
       child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: ListView.builder(
-              itemCount: 3,
-              itemBuilder: (ctx, idx) {
-                return ScheduleCard(
-                    color: Colors.red,
-                    content: 'example',
-                    endTime: 8,
-                    startTime: 13);
-              })),
+          child: StreamBuilder<List<Schedule>>(
+            stream: GetIt.I<LocalDatabase>().watchSchedules(),
+            builder: (context, snapshot) {
+              return ListView.builder(
+                  itemCount: 3,
+                  itemBuilder: (ctx, idx) {
+                    return ScheduleCard(
+                        color: Colors.red,
+                        content: 'example',
+                        endTime: 8,
+                        startTime: 13);
+                  });
+            }
+          )),
     );
   }
 }

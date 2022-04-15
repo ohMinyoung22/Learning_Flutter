@@ -15,7 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime selectedDay = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime selectedDay = DateTime.utc(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime focusedDay = DateTime.now();
 
   @override
@@ -36,7 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             height: 8.0,
           ),
-          _ScheduleList()
+          _ScheduleList(
+            selectedDay: selectedDay,
+          )
         ]),
       ),
     );
@@ -45,8 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
   FloatingActionButton renderFloatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
-        showModalBottomSheet( 
-          isScrollControlled: true,
+        showModalBottomSheet(
+            isScrollControlled: true,
             context: context,
             builder: (ctx) {
               return ScheduleBottomSheet(selectedDate: selectedDay);
@@ -66,7 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _ScheduleList extends StatelessWidget {
+  final DateTime selectedDay;
+
   const _ScheduleList({
+    required this.selectedDay,
     Key? key,
   }) : super(key: key);
 
@@ -76,19 +82,30 @@ class _ScheduleList extends StatelessWidget {
       child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: StreamBuilder<List<Schedule>>(
-            stream: GetIt.I<LocalDatabase>().watchSchedules(),
-            builder: (context, snapshot) {
-              return ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (ctx, idx) {
-                    return ScheduleCard(
-                        color: Colors.red,
-                        content: 'example',
-                        endTime: 8,
-                        startTime: 13);
-                  });
-            }
-          )),
+              stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDay),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.hasData && snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text('스케쥴이 없습니다'),
+                  );
+                }
+
+                return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (ctx, idx) {
+                      final schedule = snapshot.data![idx];
+
+                      return ScheduleCard(
+                          color: Colors.red,
+                          content: schedule.content,
+                          endTime: schedule.endTime,
+                          startTime: schedule.startTime);
+                    });
+              })),
     );
   }
 }
